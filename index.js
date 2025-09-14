@@ -31,8 +31,8 @@ if (process.env.NODE_ENV === 'production') {
 
 // CORS configuration
 app.use(cors({
-  origin: [],
-    ? [process.env.FRONTEND_URL, 'https://vercel.app', 'https://vercel.com']
+  origin: process.env.NODE_ENV === 'production'
+    ? [] // Will be updated after frontend deployment
     : ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
