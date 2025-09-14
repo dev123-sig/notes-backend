@@ -51,6 +51,21 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/notes-saa
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Notes Backend API',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      auth: '/auth/*',
+      notes: '/notes/*',
+      tenants: '/tenants/*',
+      users: '/users/*'
+    }
+  });
+});
+
 // Health endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
