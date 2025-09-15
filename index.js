@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'production') {
 // CORS configuration
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? []  // Will be updated after frontend deployment
+    ? ['https://notes-frontend-eight-rho.vercel.app']  // Your frontend URL
     : ['http://localhost:3000', 'http://127.0.0.1:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
