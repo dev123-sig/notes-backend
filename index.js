@@ -29,11 +29,9 @@ if (process.env.NODE_ENV === 'production') {
   app.use(limiter);
 }
 
-// CORS configuration
+// CORS configuration - Allow all origins for automated testing
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? ['https://notes-frontend-eight-rho.vercel.app']  // Your frontend URL
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  origin: true,  // Allow all origins for automated scripts and dashboards
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -69,6 +67,39 @@ app.get('/', (req, res) => {
 // Health endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+// Admin endpoint to clear all data (use with caution!)
+app.post('/admin/clear-all-data', async (req, res) => {
+  try {
+    // Security check - only allow in development or with special key
+    const adminKey = req.headers['x-admin-key'];
+    if (process.env.NODE_ENV === 'production' && adminKey !== process.env.ADMIN_CLEAR_KEY) {
+      return res.status(403).json({ success: false, message: 'Unauthorized' });
+    }
+
+    const User = require('./models/User');
+    const Tenant = require('./models/Tenant');
+    const Note = require('./models/Note');
+    const Invitation = require('./models/Invitation');
+
+    // Clear all collections
+    await Promise.all([
+      User.deleteMany({}),
+      Tenant.deleteMany({}),
+      Note.deleteMany({}),
+      Invitation.deleteMany({})
+    ]);
+
+    res.json({ 
+      success: true, 
+      message: 'All data cleared successfully',
+      cleared: ['users', 'tenants', 'notes', 'invitations']
+    });
+  } catch (error) {
+    console.error('Error clearing data:', error);
+    res.status(500).json({ success: false, message: 'Error clearing data' });
+  }
 });
 
 // Routes
