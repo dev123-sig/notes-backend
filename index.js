@@ -69,6 +69,17 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+// Debug endpoint to check environment (temporary)
+app.get('/debug-env', (req, res) => {
+  res.json({
+    nodeEnv: process.env.NODE_ENV,
+    hasJwtSecret: !!process.env.JWT_SECRET,
+    jwtSecretLength: process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0,
+    hasMongoUri: !!process.env.MONGODB_URI,
+    jwtExpiresIn: process.env.JWT_EXPIRES_IN
+  });
+});
+
 // Admin endpoint to clear all data (use with caution!)
 app.post('/admin/clear-all-data', async (req, res) => {
   try {
